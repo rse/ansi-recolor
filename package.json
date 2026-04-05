@@ -1,0 +1,46 @@
+{
+    "name":                             "ansi-recolor",
+    "description":                      "Transform ANSI Color Sequences of TUI Applications",
+    "keywords":                         [ "ansi", "color", "recolor", "transform", "tui" ],
+    "version":                          "0.9.0",
+    "license":                          "MIT",
+    "author": {
+        "name":                         "Dr. Ralf S. Engelschall",
+        "email":                        "rse@engelschall.com",
+        "url":                          "http://engelschall.com"
+    },
+    "bin":                              { "ansi-recolor": "dst/ansi-recolor.js" },
+    "devDependencies": {
+        "eslint":                       "9.39.4",
+        "@eslint/js":                   "9.39.4",
+        "eslint-plugin-n":              "17.24.0",
+        "eslint-plugin-promise":        "7.2.1",
+        "eslint-plugin-import":         "2.32.0",
+        "neostandard":                  "0.13.0",
+        "globals":                      "17.4.0",
+        "shx":                          "0.4.0",
+        "typescript":                   "6.0.2",
+        "nodemon":                      "3.1.14",
+        "@rse/stx":                     "1.1.4",
+        "tsx":                          "4.21.0",
+        "remark-cli":                   "12.0.1",
+        "remark":                       "15.0.1",
+        "remark-man":                   "9.0.0",
+
+        "@types/node":                  "25.5.2",
+        "@types/yargs":                 "17.0.35"
+    },
+    "dependencies": {
+        "yargs":                        "18.0.0",
+        "node-pty":                     "1.2.0-beta.12",
+        "tty-attr":                     "0.9.3"
+    },
+    "upd":                              [ "!eslint", "!@eslint/js" ],
+    "engines": {
+        "npm":                          ">=10.0.0",
+        "node":                         ">=22.0.0"
+    },
+    "scripts": {
+        "start":                        "stx -v4 -l warning -c etc/stx.conf"
+    }
+}
