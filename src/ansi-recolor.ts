@@ -820,7 +820,7 @@ const watchTraceFile = (filePath: string): void => {
 /*  write a fatal error message and exit  */
 const fatalError = (context: string, err: unknown): never => {
     const msg = err instanceof Error ? err.message : String(err)
-    process.stderr.write(`recolor: ERROR: ${context}: ${msg}\n`)
+    process.stderr.write(`ansi-recolor: ERROR: ${context}: ${msg}\n`)
     process.exit(1)
 }
 
@@ -884,22 +884,16 @@ const main = async (): Promise<void> => {
 
     /*  watch mode: watch the trace file and print with color previews  */
     if (watchMode) {
-        if (tracePath === undefined) {
-            process.stderr.write("recolor: ERROR: --watch requires --trace/-t <file>\n")
-            process.exit(1)
-        }
-        if (appArgs.length > 0) {
-            process.stderr.write("recolor: ERROR: --watch does not accept a command\n")
-            process.exit(1)
-        }
+        if (tracePath === undefined)
+            fatalError("--watch requires --trace/-t <file>")
+        if (appArgs.length > 0)
+            fatalError("--watch does not accept a command")
         watchTraceFile(tracePath)
         return
     }
 
-    if (appArgs.length === 0) {
-        process.stderr.write("recolor: ERROR: no command specified\n")
-        process.exit(1)
-    }
+    if (appArgs.length === 0)
+        fatalError("no command specified")
     const app      = String(appArgs[0])
     const restArgs = appArgs.slice(1).map(String)
 
