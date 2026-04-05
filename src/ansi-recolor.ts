@@ -818,9 +818,13 @@ const watchTraceFile = (filePath: string): void => {
 }
 
 /*  write a fatal error message and exit  */
-const fatalError = (context: string, err: unknown): never => {
-    const msg = err instanceof Error ? err.message : String(err)
-    process.stderr.write(`ansi-recolor: ERROR: ${context}: ${msg}\n`)
+const fatalError = (context: string, err?: unknown): never => {
+    if (err) {
+        const msg = err instanceof Error ? err.message : String(err)
+        process.stderr.write(`ansi-recolor: ERROR: ${context}: ${msg}\n`)
+    }
+    else
+        process.stderr.write(`ansi-recolor: ERROR: ${context}\n`)
     process.exit(1)
 }
 
@@ -888,7 +892,7 @@ const main = async (): Promise<void> => {
             fatalError("--watch requires --trace/-t <file>")
         if (appArgs.length > 0)
             fatalError("--watch does not accept a command")
-        watchTraceFile(tracePath)
+        watchTraceFile(tracePath!)
         return
     }
 
