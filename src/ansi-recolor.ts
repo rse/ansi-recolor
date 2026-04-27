@@ -135,7 +135,7 @@ const parseConfig = (text: string, name: string): ColorMapping[] => {
         const raw = lines[i]
 
         /*  skip blank lines and comments  */
-        if (raw.trim() === "" || raw.trim().startsWith("#"))
+        if (raw.trim() === "" || raw.trim().match(/^#+(?:\s|$)/))
             continue
 
         /*  color alias definition (non-indented "<name> = <color>")  */
