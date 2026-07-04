@@ -34,6 +34,11 @@
         "node-pty":                     "1.2.0-beta.12",
         "tty-attr":                     "0.9.3"
     },
+    "allowScripts": {
+        "esbuild":                      true,
+        "node-pty":                     true,
+        "tty-attr":                     true
+    },
     "upd":                              [ "!eslint", "!@eslint/js" ],
     "engines": {
         "npm":                          ">=10.0.0",
