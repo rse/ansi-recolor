@@ -23,7 +23,8 @@ Terminal User Interface (TUI) applications. It spawns the target
 *command* inside a Pseudo-Terminal (PTY), intercepts the output byte stream,
 rewrites foreground and background colors according to a declarative
 configuration file, and writes the transformed output to the real
-terminal.
+terminal. If standard output is not a terminal (e.g. a pipe), the
+*command* is run directly, without a PTY and without any recoloring.
 
 This allows the end-user to adjust or completely remap the color
 palette of any terminal application without modifying the application

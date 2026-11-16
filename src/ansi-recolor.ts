@@ -9,6 +9,7 @@ import os          from "node:os"
 import path        from "node:path"
 import fs          from "node:fs"
 import process     from "node:process"
+import { spawn }   from "node:child_process"
 
 import yargs       from "yargs"
 import { hideBin } from "yargs/helpers"
@@ -901,6 +902,24 @@ const main = async (): Promise<void> => {
     const app      = String(appArgs[0])
     const restArgs = appArgs.slice(1).map(String)
 
+    /*  pass-through mode: without a TTY on stdout, run the application
+        directly, as recoloring through a PTY would break piped output  */
+    if (!process.stdout.isTTY) {
+        const child = spawn(app, restArgs, { stdio: "inherit" })
+        for (const signal of [ "SIGTERM", "SIGHUP" ] as const)
+            process.on(signal, () => { child.kill(signal) })
+        child.on("error", (err) => {
+            fatalError(`failed to spawn command "${app}"`, err)
+        })
+        child.on("exit", (code, signal) => {
+            if (signal !== null)
+                process.kill(process.pid, signal)
+            else
+                process.exit(code ?? 1)
+        })
+        return
+    }
+
     /*  open trace file if requested  */
     if (tracePath !== undefined) {
         try {
@@ -936,12 +955,15 @@ const main = async (): Promise<void> => {
         encoding: null
     })
 
-    /*  pipe PTY output through color transformation to stdout  */
+    /*  pipe PTY output through color transformation to stdout
+        (honoring back-pressure by pausing the PTY until stdout drained)  */
     term.onData((data: Buffer | string) => {
         const chunk = Buffer.isBuffer(data) ? data : Buffer.from(data)
         const transformed = processChunk(chunk, mappings, mapColors)
-        if (transformed.length > 0)
-            fs.writeSync(1, transformed)
+        if (transformed.length > 0 && !process.stdout.write(transformed)) {
+            term.pause()
+            process.stdout.once("drain", () => { term.resume() })
+        }
     })
 
     /*  pipe stdin to the PTY  */
@@ -969,7 +991,9 @@ const main = async (): Promise<void> => {
         if (process.stdin.isTTY)
             ttyAttr.restoreAttr()
         process.stdin.pause()
-        process.exit(exitCode)
+
+        /*  flush still pending stdout output before exiting  */
+        process.stdout.write("", () => { process.exit(exitCode) })
     })
 }
 main().catch((err: unknown) => {
